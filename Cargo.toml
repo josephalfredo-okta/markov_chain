@@ -1,0 +1,7 @@
+[package]
+name = "markovchain"
+version = "0.1.0"
+authors = ["josephalfredo"]
+edition = "2018"
+
+[dependencies]
