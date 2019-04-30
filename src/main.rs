@@ -24,7 +24,7 @@ fn main() {
     process::exit(1);
   });
 
-  let markov = Markov::new(&file_content);
+  let markov = Markov::new(config.chain_size, &file_content);
 
   let sentence = markov.create_sentences(config.sentence_size);
   println!("{}", sentence);
