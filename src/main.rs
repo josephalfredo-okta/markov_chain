@@ -10,8 +10,7 @@ use lib::Markov;
 
 fn main() {
   // Initial program setup
-  let args: Vec<String> = env::args().skip(1).collect();
-  let config = Config::new(&args).unwrap_or_else(|err| {
+  let config = Config::new(env::args()).unwrap_or_else(|err| {
     eprintln!("Config Error - {}", err);
     print_help();
     process::exit(1);

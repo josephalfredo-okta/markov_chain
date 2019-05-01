@@ -1,3 +1,5 @@
+// extern crate test;
+
 use rand::Rng;
 use std::collections::HashMap;
 
@@ -10,6 +12,7 @@ pub struct Markov<'a> {
 impl<'a> Markov<'a> {
   pub fn new(chain_size: usize, content: &'a String) -> Self {
     let words = Markov::split_content(&content);
+    println!("Read : {} words", words.len());
     let chains = HashMap::new();
     let mut markov = Markov {
       chain_size,
@@ -42,20 +45,16 @@ impl<'a> Markov<'a> {
         break;
       }
     }
-    println!("Creating paragraph with {} word(s)", sentence_size);
+    println!("Creating paragraph with {} characters", sentence_size);
 
     sentences
   }
 
   fn split_content(file_content: &String) -> Vec<&str> {
-    let mut words: Vec<&str> = Vec::new();
-    for word in file_content.split(" ") {
-      if !word.eq_ignore_ascii_case("") && !word.eq_ignore_ascii_case(" ") {
-        words.push(word);
-      }
-    }
-    println!("Reading : {} words", words.len());
-    words
+    file_content
+      .split(" ")
+      .filter(|word| !word.eq_ignore_ascii_case("") && !word.eq_ignore_ascii_case(" "))
+      .collect()
   }
 
   fn create_chain(&mut self, chain_size: usize) {
@@ -94,6 +93,7 @@ impl<'a> Markov<'a> {
 #[cfg(test)]
 mod tests {
   use super::*;
+  // use test::Bencher;
 
   #[test]
   fn should_create_chain() {
@@ -108,4 +108,13 @@ mod tests {
     );
     assert_eq!(chains.get(&String::from("jumped over")), Some(&vec!["the"]));
   }
+
+  // #[bench]
+  // fn benchmark(bench: &mut Bencher) {
+  //   bench.iter(|| {
+  //     for i in 0..100 {
+  //       let x = i + 1;
+  //     }
+  //   })
+  // }
 }
