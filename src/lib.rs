@@ -60,7 +60,6 @@ impl<'a> Markov<'a> {
   }
 
   /// This will create markov chain matrix with n chain_size
-  /// Currently pretty slow, mainly on creating the matrix
   fn create_chain(&mut self, chain_size: usize) {
     // sliding window with n size
 
@@ -68,19 +67,21 @@ impl<'a> Markov<'a> {
       let key = (&self.words[i..(i + self.chain_size)]).join(" ");
       let word = self.words[i + chain_size];
 
-      // let val: &mut Vec<&'a str> = self.chains.entry(key).or_insert(vec![word]){
-      //   (*val).push(word);
-      // }
+      // seems to be faster
+      self
+        .chains
+        .entry(key)
+        .and_modify(|val| (*val).push(word))
+        .or_insert(vec![word]);
 
-      if !self.chains.contains_key(&key) {
-        self.chains.insert(key, vec![word]);
-      } else {
-        if let Some(pos) = self.chains.get_mut(&key) {
-          pos.push(word);
-        }
-      }
+      // if !self.chains.contains_key(&key) {
+      //   self.chains.insert(key, vec![word]);
+      // } else {
+      //   if let Some(pos) = self.chains.get_mut(&key) {
+      //     pos.push(word);
+      //   }
+      // }
     }
-    println!("{:#?}", self.chains);
     println!(
       "Created Chain size with {} distinct words pairs",
       self.chains.len()
