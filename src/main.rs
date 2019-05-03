@@ -5,8 +5,7 @@ mod config;
 use config::Config;
 
 mod file;
-mod lib;
-use lib::Markov;
+use markovchain::Markov;
 
 fn main() {
   // Initial program setup

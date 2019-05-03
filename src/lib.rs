@@ -1,4 +1,5 @@
-// extern crate test;
+#![feature(test)]
+extern crate test;
 
 use rand::Rng;
 use std::collections::HashMap;
@@ -67,15 +68,15 @@ impl<'a> Markov<'a> {
       let key = (&self.words[i..(i + self.chain_size)]).join(" ");
       let word = self.words[i + chain_size];
 
-      let val: &mut Vec<&'a str> = self.chains.entry(key).or_insert(vec![word]);
-      (*val).push(word);
-      // if !self.chains.contains_key(&key) {
-      //   self.chains.insert(key, vec![word]);
-      // } else {
-      //   if let Some(pos) = self.chains.get_mut(&key) {
-      //     pos.push(word);
-      //   }
-      // }
+      // let val: &mut Vec<&'a str> = self.chains.entry(key).or_insert(vec![word]);
+      // (*val).push(word);
+      if !self.chains.contains_key(&key) {
+        self.chains.insert(key, vec![word]);
+      } else {
+        if let Some(pos) = self.chains.get_mut(&key) {
+          pos.push(word);
+        }
+      }
     }
     // println!("{:#?}", self.chains);
     println!(
@@ -94,7 +95,7 @@ impl<'a> Markov<'a> {
 mod tests {
   use super::*;
   // extern crate test;
-  // use test::Bencher;
+  use test::Bencher;
 
   #[test]
   fn should_create_chain() {
@@ -110,12 +111,8 @@ mod tests {
     assert_eq!(chains.get(&String::from("jumped over")), Some(&vec!["the"]));
   }
 
-  // #[bench]
-  // fn benchmark(bench: &mut Bencher) {
-  //   bench.iter(|| {
-  //     for i in 0..100 {
-  //       let x = i + 1;
-  //     }
-  //   })
-  // }
+  #[bench]
+  fn benchmark(bench: &mut Bencher) {
+    bench.iter(|| should_create_chain())
+  }
 }
