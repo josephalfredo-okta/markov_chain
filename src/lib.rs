@@ -68,8 +68,10 @@ impl<'a> Markov<'a> {
       let key = (&self.words[i..(i + self.chain_size)]).join(" ");
       let word = self.words[i + chain_size];
 
-      // let val: &mut Vec<&'a str> = self.chains.entry(key).or_insert(vec![word]);
-      // (*val).push(word);
+      // let val: &mut Vec<&'a str> = self.chains.entry(key).or_insert(vec![word]){
+      //   (*val).push(word);
+      // }
+
       if !self.chains.contains_key(&key) {
         self.chains.insert(key, vec![word]);
       } else {
@@ -78,7 +80,7 @@ impl<'a> Markov<'a> {
         }
       }
     }
-    // println!("{:#?}", self.chains);
+    println!("{:#?}", self.chains);
     println!(
       "Created Chain size with {} distinct words pairs",
       self.chains.len()
