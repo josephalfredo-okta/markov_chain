@@ -25,10 +25,15 @@ fn main() {
 
   let markov = Markov::new(config.chain_size, &file_content);
 
+  println!(
+    "Creating paragraph with {} characters",
+    config.sentence_size
+  );
+
   let sentence = markov.create_sentences(config.sentence_size);
   println!("{}", sentence);
 }
 
 fn print_help() {
-  println!("usage: markovchain file_path sentence_size(char)")
+  println!("usage: markovchain file_path chain_size sentence_size(char)")
 }

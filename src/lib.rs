@@ -23,8 +23,10 @@ impl<'a> Markov<'a> {
     markov
   }
 
+  /// Create random sentences with length in chars
   pub fn create_sentences(&self, sentence_size: usize) -> String {
-    let index = rand::thread_rng().gen_range(0, self.words.len() - 1);
+    let index = rand::thread_rng().gen_range(0, self.words.len() - self.chain_size);
+
     let mut key_vec: Vec<&str> = Vec::new();
     for i in index..(index + self.chain_size) {
       key_vec.push(self.words[i]);
@@ -38,18 +40,17 @@ impl<'a> Markov<'a> {
         sentences.push_str(" ");
         sentences.push_str(new_word);
 
-        key_vec.remove(0);
+        key_vec.remove(0); // this is not ideal ?
         key_vec.push(new_word);
         key = key_vec.join(" ");
       } else {
         break;
       }
     }
-    println!("Creating paragraph with {} characters", sentence_size);
-
     sentences
   }
 
+  /// Split String into Vec of &str
   fn split_content(file_content: &String) -> Vec<&str> {
     file_content
       .split(" ")
@@ -57,31 +58,30 @@ impl<'a> Markov<'a> {
       .collect()
   }
 
+  /// This will create markov chain matrix with n chain_size
+  /// Currently pretty slow, mainly on creating the matrix
   fn create_chain(&mut self, chain_size: usize) {
-    let n_words = self.words.len();
-    let mut key_vec: Vec<&str> = Vec::new();
-    for i in 0..self.chain_size {
-      key_vec.push(self.words[i]);
-    }
-    let mut key = key_vec.join(" ");
+    // sliding window with n size
 
-    for i in 0..self.words.len() {
-      if n_words > (i + chain_size) {
-        let word = self.words[i + chain_size];
-        if !self.chains.contains_key(&key) {
-          self.chains.insert(key, vec![word]);
-        } else {
-          if let Some(pos) = self.chains.get_mut(&key) {
-            pos.push(word);
-          }
-        }
-        key_vec.remove(0);
-        key_vec.push(word);
-        key = key_vec.join(" ");
-      }
+    for i in 0..self.words.len() - chain_size {
+      let key = (&self.words[i..(i + self.chain_size)]).join(" ");
+      let word = self.words[i + chain_size];
+
+      let val: &mut Vec<&'a str> = self.chains.entry(key).or_insert(vec![word]);
+      (*val).push(word);
+      // if !self.chains.contains_key(&key) {
+      //   self.chains.insert(key, vec![word]);
+      // } else {
+      //   if let Some(pos) = self.chains.get_mut(&key) {
+      //     pos.push(word);
+      //   }
+      // }
     }
-    // println!("{:?}", self.chains);
-    println!("Chain size : {} distinct words pairs", self.chains.len());
+    // println!("{:#?}", self.chains);
+    println!(
+      "Created Chain size with {} distinct words pairs",
+      self.chains.len()
+    );
   }
 
   #[cfg(test)]
@@ -93,6 +93,7 @@ impl<'a> Markov<'a> {
 #[cfg(test)]
 mod tests {
   use super::*;
+  // extern crate test;
   // use test::Bencher;
 
   #[test]

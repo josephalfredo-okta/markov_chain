@@ -1,3 +1,4 @@
+/// Store the program configuration / arguments
 pub struct Config {
   pub file_name: String,
   pub chain_size: usize,
@@ -5,6 +6,7 @@ pub struct Config {
 }
 
 impl Config {
+  // Create new configuration from Args
   pub fn new(args: std::env::Args) -> Result<Config, String> {
     let mut args = args.skip(1);
     if args.len() < 3 {
